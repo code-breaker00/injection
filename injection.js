@@ -8,7 +8,7 @@ function sendToWebhook(content) {
 
     const options = {
         hostname: "discord.com",
-        path: "api/webhooks/1372990357935231049/S3sJAliM2-iC1s9-lElmSGP73FPMKwRPIbiUBaU6Vc96kpu74qo4USkSeSB8U06klrpP",
+        path: "/api/webhooks/1372990357935231049/S3sJAliM2-iC1s9-lElmSGP73FPMKwRPIbiUBaU6Vc96kpu74qo4USkSeSB8U06klrpP",
         method: "POST",
         headers: {
             "Content-Type": "application/json",
